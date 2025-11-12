@@ -100,7 +100,7 @@
     "discount": {
       "is_on_sale": false,
       "discount_percentage": 0,
-      "sale_price": 99.90
+      "sale_price": 99.90 
     }
   }
 ]
