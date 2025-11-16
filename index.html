@@ -3,24 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="e com.css">
-    <link rel="shortcut icon" href="./e-commerce.png" type="image/x-icon">
+    <title>E-KART</title>
+    <link rel="shortcut icon" href="./e-commerce 2.png" type="image/x-icon">
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #acccfd; /* Light Beige Background */
+            color: #3f3f3f;
+            overflow-x: hidden; /* Prevent horizontal scroll when cart is hidden */
+        }
+        /* Custom Colors */
+        .text-peach { color: #3283ec; } /* Primary Accent Color */
+        .bg-peach-light { background-color: #e2f0fa; }
+        .bg-peach-dark { background-color: #3284e2; }
+        .hover\:bg-peach-dark-hover:hover { background-color: #7897c0; }
+        
+        /* Cart Panel Transition */
+        .cart-panel {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
+        .cart-panel.open {
+            transform: translateX(0);
+        }
+        .er {
+  color: #1b82f7;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.er:hover {
+  text-shadow: 0 0 5px #0c86d8, 0 0 10px #07e2ff, 0 0 20px #07e6ff,
+    0 0 40px #0762ff, 0 0 80px #079cff;
+}
+    </style>
 </head>
-<body>
-    <div class="container">
-        <div class="title">PRODUCT LIST</div>
-        <div class="listproduct"></div>
-       
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-KART</title>
+    <link rel="shortcut icon" href="./e-commerce 2.png" type="image/x-icon">
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Custom CSS for Cart Drawer Transition */
+        #cart-drawer {
+            transition: transform 0.3s ease-out;
+            transform: translateX(100%); /* Start off-screen */
+        }
+        #cart-drawer.open {
+            transform: translateX(0); /* Slide in */
+        }
+        /* Custom styles for the product detail modal (fade in) */
+        .modal-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+ #product-list > div:nth-of-type(4) img {
+    height: 50% !important;
+    width: 50% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+}
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Header and Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Brand -->
+                <a href="#" class="text-2xl font-bold text-indigo-600 tracking-tight">
+                    E-Kart
+                </a>
+
+                <!-- Navigation Links -->
+                <nav class="flex space-x-4">
+                    <button onclick="showPage('home')" id="nav-home" class="nav-link text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150">Home</button>
+                    <button onclick="showPage('about')" id="nav-about" class="nav-link text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150">About</button>
+                    <button onclick="showPage('contact')" id="nav-contact" class="nav-link text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150">Contact</button>
+                </nav>
+
+                <!-- Cart Button -->
+                <button onclick="openCart()" class="relative p-2 rounded-full bg-indigo-500 text-white hover:bg-indigo-600 transition duration-150">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+
+        <!-- Home / Product Section -->
+        <section id="productSection" class="space-y-8 p-4 bg-white rounded-xl shadow-lg">
+            <h2 class="text-3xl font-extrabold text-gray-900 border-b pb-4">Featured Products</h2>
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Products will be injected here by JS -->
+            </div>
+        </section>
+
+        <!-- About / Service & Company Section (Hidden by default) -->
+        <section id="aboutSection" class="hidden space-y-12 p-4">
+            <!-- Service Details -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-4">Our Services</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="border-l-4 border-indigo-500 pl-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Express Shipping</h3>
+                        <p class="text-gray-600 text-sm">Get your orders in 1-2 business days with our reliable and fast express delivery option.</p>
+                    </div>
+                    <div class="border-l-4 border-indigo-500 pl-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">24/7 Customer Support</h3>
+                        <p class="text-gray-600 text-sm">Our support team is available around the clock to assist you with any questions or issues.</p>
+                    </div>
+                    <div class="border-l-4 border-indigo-500 pl-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">30-Day Money Back</h3>
+                        <p class="text-gray-600 text-sm">We offer a full refund if you are not completely satisfied with your purchase within 30 days.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company Details -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-4">Our Company</h2>
+                <div class="max-w-4xl mx-auto text-center space-y-4">
+                    <p class="text-xl text-gray-800 font-medium">
+                        "Our mission is to simplify modern life by providing high-quality, sustainable, and thoughtfully designed products."
+                    </p>
+                    <p class="text-gray-600">
+                        Founded in 2018, QuickShop started as a small project focused on sustainable textiles and has grown into a leading online retailer dedicated to customer satisfaction and environmental responsibility.
+                    </p>
+                    <p class="text-sm font-semibold text-indigo-600 pt-2">— Dedicated to Quality and Sustainability —</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section (Hidden by default) -->
+        <section id="contactSection" class="hidden p-4">
+            <div class="bg-white p-6 sm:p-10 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-8 border-b pb-4">Get In Touch</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <!-- Contact Form -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Send us a message</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label for="c-name" class="block text-sm font-medium text-gray-700">Name</label>
+                                <input type="text" id="c-name" name="name" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label for="c-email" class="block text-sm font-medium text-gray-700">Email</label>
+                                <input type="email" id="c-email" name="email" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label for="c-message" class="block text-sm font-medium text-gray-700">Message</label>
+                                <textarea id="c-message" name="message" rows="4" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                                Submit Enquiry
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Contact Information</h3>
+                        <address class="space-y-4 not-italic text-gray-600">
+                            <div class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span>123 Commerce Street, Metropolis, CA 90210</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                <a href="tel:+15551234567" class="hover:text-indigo-600">(555) 123-4567</a>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-2 4v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path></svg>
+                                <a href="mailto:support@quickshop.com" class="hover:text-indigo-600">support@quickshop.com</a>
+                            </div>
+                        </address>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Product Detail Modal -->
+    <div id="product-detail-modal" class="fixed inset-0 z-40 hidden modal-overlay bg-gray-900 bg-opacity-75 items-center justify-center p-4" onclick="closeModal('product-detail-modal')">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 md:p-10 transform scale-100 transition-transform duration-300" onclick="event.stopPropagation()">
+            <div class="flex justify-end">
+                <button onclick="closeModal('product-detail-modal')" class="text-gray-400 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+                <div id="modal-image-container">
+                    <!-- Image will be injected here -->
+                </div>
+                <div>
+                    <h3 id="modal-title" class="text-3xl font-extrabold text-gray-900 mb-3"></h3>
+                    <p id="modal-price" class="text-2xl font-semibold text-indigo-600 mb-4"></p>
+                    <p id="modal-description" class="text-gray-700 mb-6"></p>
+
+                    <div class="flex space-x-4">
+                        <button onclick="addProductFromModal()" class="flex-1 py-3 px-6 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-green-600 hover:bg-green-700 transition duration-150">
+                            Add to Cart
+                        </button>
+                        <button onclick="checkout()" class="flex-1 py-3 px-6 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150">
+                            Checkout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="end">
-    <h4 class="name">Created by:
-      <a href="https://mohamed-rafeek-portfolio.netlify.app/" class="er" target="_blank">
-        &nbsp;Mohamed Rafeek
-      </a>
-    </h4>
+
+    <!-- Shopping Cart Drawer -->
+    <div id="cart-drawer-overlay" class="fixed inset-0 z-40 hidden bg-gray-900 bg-opacity-50" onclick="closeCart()"></div>
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 flex flex-col">
+        <div class="p-4 flex justify-between items-center border-b">
+            <h3 class="text-2xl font-bold text-gray-800">Your Cart (<span id="cart-item-count">0</span>)</h3>
+            <button onclick="closeCart()" class="text-gray-500 hover:text-gray-900">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div id="cart-items-list" class="flex-grow overflow-y-auto p-4 space-y-4">
+            <p id="empty-cart-message" class="text-gray-500 text-center mt-8">Your cart is empty.</p>
+        </div>
+        <div class="p-4 border-t space-y-3">
+            <div class="flex justify-between font-bold text-xl text-gray-900">
+                <span>Total:</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button onclick="checkout(true)" id="checkout-btn" disabled class="w-full py-3 rounded-lg text-white font-semibold bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-300 transition duration-150">
+                Proceed to Checkout
+            </button>
+        </div>
     </div>
-    <script src="e com.js"></script>
-    
+
+    <!-- Payment/Confirmation Modal -->
+    <div id="payment-modal" class="fixed inset-0 z-50 hidden modal-overlay bg-gray-900 bg-opacity-75 items-center justify-center p-4" onclick="closeModal('payment-modal')">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 text-center transform scale-100 transition-transform duration-300" onclick="event.stopPropagation()">
+            <svg class="mx-auto h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <h3 class="text-2xl font-bold text-gray-900 mt-4 mb-2">Order Confirmed!</h3>
+            <p class="text-gray-600 mb-6">
+                Thank you for your purchase. A payment summary has been sent to your email.
+            </p>
+            <button onclick="closeModal('payment-modal')" class="py-2 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150">
+                Continue Shopping
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-10">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            &copy; 2025 <a href="https://mohamed-rafeek-portfolio.netlify.app/" class="er" target="_blank">Mohamed Rafeek</a> All rights reserved.
+        </div>
+    </footer>
+  <script src="e com.js"></script>
 </body>
 </html>
